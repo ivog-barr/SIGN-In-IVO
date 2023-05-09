@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Google sign in</h1>
+    <hr />
+    
+
+    <div
+      id="g_id_onload"
+      data-client_id="13159214832-uhdorbav79ckvrd2s8bq6etd6977m9n3.apps.googleusercontent.com"
+      data-callback="handleCredentialResponse"
+      data-auto_prompt="false"
+    ></div>
+    <div
+      class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="outline"
+      data-text="sign_in_with"
+      data-shape="rectangular"
+      data-logo_alignment="left"
+    ></div>
+
+    <button id="google-signout">LOG OUT</button>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <script>
+      async function handleCredentialResponse(response) {
+        try {
+          const url = "http://localhost:4000/auth/user/google";
+          const datos = {
+            id_token: response.credential
+          }
+            // Aquí puedes agregar los datos que deseas enviar en el cuerpo de la petición
+
+
+          const respuesta = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // Especificamos que los datos se enviarán en formato JSON
+            },
+            body: JSON.stringify(datos), // Convertimos los datos a formato JSON antes de enviarlos
+          });
+
+          const resultado = await respuesta.json();
+          console.log(resultado);
+          localStorage.setItem('email',resultado.usuario.email)
+        } catch (error) {
+          console.log("Error:", error);
+        }
+      }
+
+      const button = document.getElementById('google-signout');
+      button.onclick = () =>{
+         console.log(google.accounts.id);
+         google.accounts.id.disableAutoSelect();
+         google.accounts.id.revoke(localStorage.getItem('email'),done =>{
+            localStorage.clear();
+            location.reload();
+         })
+      }
+    </script>
+  </body>
+</html>

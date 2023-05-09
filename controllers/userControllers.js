@@ -20,7 +20,10 @@ const userPost = async (req =request, res = response) => {
       // Guardar el usuario en la base de datos
       await usuario.save();
   
-      res.status(201).json({ mensaje: 'Usuario creado exitosamente' });
+      res.status(201).json({ 
+        mensaje: 'Usuario creado exitosamente',
+        usuario
+     });
     } catch (error) {
       console.error('Error al crear usuario:', error);
       res.status(500).json({ error: 'Error al crear usuario' });
@@ -29,6 +32,32 @@ const userPost = async (req =request, res = response) => {
 
 
 
+  const userDelete = async(req = request, res= response)=>{
+    const {id} = req.params;
+
+    if(!req.authUser.estado){
+      return res.status(401).json({
+        msg:'Usuario eliminado de la base de datos no puede realizar esta accion'
+      })
+    }
+
+    try {
+      const user  = await Usuario.findByIdAndUpdate(id,{estado:false},{new:true});
+
+      res.json({
+        msg:'Usuario eliminado satisfactoriamente',
+        user
+
+      })
+      
+    } catch (error) {
+      
+    }
+  }
+
+
+
   module.exports = {
-    userPost
+    userPost,
+    userDelete
   }

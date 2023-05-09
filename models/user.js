@@ -13,8 +13,26 @@ const usuarioSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true
+  },
+  estado:{
+    type:Boolean,
+    default:true
+  },
+  img:{
+    type:String,
+    default:'chonkersusmaximussplinksus'
+  },
+  google:{
+    type:Boolean,
+    default:false
   }
 });
+
+usuarioSchema.methods.toJSON = function(){
+  const {_id, ...user} = this.toObject();
+  user.uid = _id;
+  return user;
+}
 
 const Usuario = mongoose.model('Usuario', usuarioSchema);
 

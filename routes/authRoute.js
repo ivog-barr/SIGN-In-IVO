@@ -1,8 +1,8 @@
 const express = require("express");
 const authRouter = express.Router();
-const { body } = require("express-validator");
+const { body, check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validarCampos");
-const { authController } = require("../controllers/authController");
+const { authController, googleController } = require("../controllers/authController");
 
 
 authRouter.post('/',[
@@ -12,6 +12,14 @@ authRouter.post('/',[
     validarCampos
 
 ],authController);
+
+
+authRouter.post('/google',[
+
+    check('id_token','Token de google es necesario').notEmpty(),
+    validarCampos
+
+],googleController);
 
 
 
