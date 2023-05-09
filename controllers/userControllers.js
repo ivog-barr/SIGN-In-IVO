@@ -3,15 +3,37 @@ const Usuario = require("../models/user");
 const bcrypt = require('bcrypt');
 
 
+const userGet = async(req = request,res = response)=>{
+  const {desde=0, limit=5 } = req.query;
+
+  const [total,usuarios] = await Promise.all([
+      Usuario.countDocuments({estado:true}),
+
+      Usuario.find({estado:true})
+          .skip(Number(desde))
+          .limit(Number(limit))
+
+     
+      
+  ]);
+  res.json({
+      total,
+      usuarios
+  });
+};
+
+
+
 const userPost = async (req =request, res = response) => {
     try {
-      const { nombre, contrasena, email } = req.body;
+      const { nombre, contrasena, email, rol="User" } = req.body;
   
       // Crear una instancia del modelo Usuario con los datos recibidos
       const usuario = new Usuario({
         nombre,
         contrasena,
-        email
+        email,
+        rol
       });
 
       const salt = bcrypt.genSaltSync();
@@ -31,6 +53,26 @@ const userPost = async (req =request, res = response) => {
   };
 
 
+  const userPut = async(req =request, res = response)=>{
+    const{id} = req.params;
+
+    const{_id, contrasena,estado, ...resto} = req.body;
+
+    if(contrasena){
+      const salt = bcrypt.genSaltSync();
+      resto.contrasena = bcrypt.hashSync(contrasena,salt);
+    }
+
+    const user = await Usuario.findByIdAndUpdate(id,resto,{new:true});
+    await user.save();
+
+    res.json({
+      msg:'Usuario actualizado con exito :)',
+      user
+    })
+  }
+
+
 
   const userDelete = async(req = request, res= response)=>{
     const {id} = req.params;
@@ -38,7 +80,14 @@ const userPost = async (req =request, res = response) => {
     if(!req.authUser.estado){
       return res.status(401).json({
         msg:'Usuario eliminado de la base de datos no puede realizar esta accion'
-      })
+      });
+    };
+
+    if(req.authUser.rol !== "Admin"){
+      return res.status(401).json({
+        msg:'Usuario no es administrador , no puede realizar esta accion'
+      });
+
     }
 
     try {
@@ -59,5 +108,7 @@ const userPost = async (req =request, res = response) => {
 
   module.exports = {
     userPost,
-    userDelete
+    userDelete,
+    userPut,
+    userGet
   }

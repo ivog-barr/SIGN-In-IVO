@@ -25,6 +25,11 @@ const usuarioSchema = new mongoose.Schema({
   google:{
     type:Boolean,
     default:false
+  },
+  rol:{
+    type:String,
+    required:true,
+    default:'User'
   }
 });
 
