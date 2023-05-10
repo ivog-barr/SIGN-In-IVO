@@ -3,6 +3,7 @@ const { conectarDB } = require('./db/connection');
 const router = require('./routes/userRoutes');
 const { authRouter } = require('./routes/authRoute');
 const { categoriasRouter } = require('./routes/categoriasRoutes');
+const { productRouter } = require('./routes/productosRoutes');
 
 require('dotenv').config();
 
@@ -19,6 +20,7 @@ conectarDB();
 app.use('/api/user', router);
 app.use('/auth/user', authRouter);
 app.use('/api/categorias',categoriasRouter);
+app.use('/api/productos',productRouter);
 
 app.listen('4000',()=>{
     console.log('Server running on port 4000');

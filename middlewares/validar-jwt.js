@@ -1,12 +1,10 @@
 const { request, response } = require('express');
 const jwt = require('jsonwebtoken');
 const Usuario = require('../models/user');
-const { default: mongoose } = require('mongoose');
 
 
 
 const validarJWT = async(req=request, res= response, next)=>{
-    const {id} = req.params;
     const token = req.header('x-token');
 
     if(!token){
