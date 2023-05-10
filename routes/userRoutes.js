@@ -8,9 +8,10 @@ const {
 } = require("../controllers/userControllers");
 const { body, check } = require("express-validator");
 const { validarCampos } = require("../middlewares/validarCampos");
-const { emailExiste } = require("../helpers/emailExiste");
+
 const { validarJWT } = require("../middlewares/validar-jwt");
-const { existeUsuarioId } = require("../helpers/existeUsuarioId");
+
+const { emailExiste, existeUsuarioId } = require("../helpers/db-validators");
 // Ruta para crear un nuevo usuario
 
 router.get('/',userGet)
