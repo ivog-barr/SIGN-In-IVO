@@ -56,7 +56,19 @@ const userPost = async (req =request, res = response) => {
   const userPut = async(req =request, res = response)=>{
     const{id} = req.params;
 
-    const{_id, contrasena,estado, ...resto} = req.body;
+    const{_id, contrasena,estado,email,rol,google, ...resto} = req.body;
+
+    console.log(req.authUser); 
+
+
+    if(req.authUser.google && email){
+      return res.json({
+        msg:'No se puede actualizar correo si se registro con google'
+      });
+    }
+
+    resto.email = email;
+
 
     if(contrasena){
       const salt = bcrypt.genSaltSync();

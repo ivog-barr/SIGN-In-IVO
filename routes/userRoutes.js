@@ -12,6 +12,8 @@ const { validarCampos } = require("../middlewares/validarCampos");
 const { validarJWT } = require("../middlewares/validar-jwt");
 
 const { emailExiste, existeUsuarioId } = require("../helpers/db-validators");
+const { emailValidator } = require("../middlewares/validarCorreo");
+const { authorizationMiddleware } = require("../middlewares/isUserAuth");
 // Ruta para crear un nuevo usuario
 
 router.get('/',userGet)
@@ -37,12 +39,13 @@ router.post(
 router.put(
   "/:id",
   [
-    check("id", "No es un mongo ID Valido").isMongoId(),
+    validarJWT,
+    check("id", "No es un mongo ID Valido").trim().isMongoId(),
     check("id").custom(existeUsuarioId),
-    check("email", "El correo no es valido").isEmail(),
-    body("rol")
-      .isIn(["User", "Admin", "Sales"]),
-    validarCampos
+    body("email").custom(emailExiste),
+    validarCampos,
+    emailValidator,
+    authorizationMiddleware,
   ],
   userPut
 );

@@ -3,7 +3,6 @@ const Usuario = require("../models/user");
 
 
 
-
 const emailExiste = async(email ="")=> {
     const existeEmail = await Usuario.findOne({email});
     if(existeEmail){
@@ -32,8 +31,12 @@ const existeCategoriaId =async(id)=>{
 
 
 
+
+
+
 module.exports = {
     emailExiste,
     existeUsuarioId,
-    existeCategoriaId
+    existeCategoriaId,
+    
 }
