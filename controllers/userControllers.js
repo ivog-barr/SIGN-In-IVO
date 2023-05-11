@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 
 const userGet = async(req = request,res = response)=>{
-  const {desde=0, limit=5 } = req.query;
+  const {desde=0, limit=10 } = req.query;
 
   const [total,usuarios] = await Promise.all([
       Usuario.countDocuments({estado:true}),

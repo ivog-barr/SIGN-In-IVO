@@ -42,6 +42,7 @@ categoriasRouter.put(
     check("id").custom(existeCategoriaId),
     body('nombre').notEmpty().withMessage('Nombre es necesario para actualizacion'),
     validarCampos,
+    
   ],
   actualizarCategoria
 );
