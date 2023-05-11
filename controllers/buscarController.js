@@ -1,6 +1,8 @@
 const { request, response } = require("express");
 const { default: mongoose } = require("mongoose");
 const Usuario = require("../models/user");
+const { Categoria } = require("../models/categoria");
+const Producto = require("../models/producto");
 
 const coleccionesPermitidas = ["usuario", "categoria", "producto"];
 
@@ -19,8 +21,52 @@ const buscarUsuarios = async (termino, res = response) => {
     $and: [{ estado: true }],
   });
 
-   res.json({
+  res.json({
     usuarios,
+  });
+};
+
+const buscarCategorias = async (termino, res) => {
+  const regex = new RegExp(termino, "i");
+  const esMongoId = mongoose.Types.ObjectId.isValid(termino);
+  if (esMongoId) {
+    const categoria = await Categoria.findById(termino);
+    return res.json({
+      results: categoria ? [categoria] : [],
+    });
+  }
+
+  const categorias = await Categoria.find({
+    $or: [{ nombre: regex }],
+    $and: [{ estado: true }],
+  }).populate("categoria", "nombre");
+
+  res.json({
+    categorias,
+  });
+};
+
+const buscarProductos = async (termino, res) => {
+  const regex = new RegExp(termino, "i");
+  const esMongoId = mongoose.Types.ObjectId.isValid(termino);
+  if (esMongoId) {
+    const producto = await Producto.findById(termino)
+      .populate("usuario", "nombre")
+      .populate("categoria", "nombre");
+    return res.json({
+      results: producto ? [producto] : [],
+    });
+  }
+
+  const productos = await Producto.find({
+    $or: [{ nombre: regex }],
+    $and: [{ estado: true }],
+  })
+    .populate("usuario", "nombre")
+    .populate("categoria", "nombre");
+
+  res.json({
+    productos,
   });
 };
 
@@ -35,8 +81,10 @@ const buscarController = async (req = request, res = response) => {
 
   switch (coleccion) {
     case "producto":
+      buscarProductos(termino, res);
       break;
     case "categoria":
+      buscarCategorias(termino, res);
       break;
 
     case "usuario":
@@ -44,14 +92,12 @@ const buscarController = async (req = request, res = response) => {
       break;
 
     default:
-        res.json({
-            coleccion,
-            termino,
-          });
+      res.json({
+        coleccion,
+        termino,
+      });
       break;
   }
-
- 
 };
 
 module.exports = {
